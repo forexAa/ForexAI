@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ForexAI V4</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#0b1220;color:#e8eefc;margin:0;padding:14px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{font-size:24px;color:#36d6a3;margin:8px 0}
+small,.muted{color:#9eabc2}
+.card{background:#172238;border:1px solid #263752;border-radius:13px;padding:15px;margin:12px 0}
+label{display:block;margin-top:8px;font-size:14px;color:#c8d3e7}
+input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #3a4b67;font-size:16px}
+input,select{background:#0c1628;color:#fff}
+button{background:#18c99a;color:#041b14;font-weight:bold;border:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{background:#0c1628;padding:10px;border-radius:8px}
+.metric b{display:block;font-size:18px;margin-top:5px}
+pre{white-space:pre-wrap;word-break:break-word;background:#0c1628;padding:12px;border-radius:8px}
+.warn{font-size:12px;color:#f3c779;line-height:1.5}
+.signal{font-size:22px;font-weight:bold}
+</style>
+</head>
+<body>
+<header>
+<div><h1>ForexAI</h1><small>V4 • Live candle prototype</small></div>
+<span>📈</span>
+</header>
+
+<div class="card">
+<h3>Market Analysis</h3>
+<label>Twelve Data API key (keep private)</label>
+<input id="key" type="password" placeholder="Enter API key each session">
+
+<div class="grid">
+<div>
+<label>Pair</label>
+<select id="pair">
+<option>EUR/USD</option><option>GBP/USD</option>
+<option>USD/JPY</option><option>USD/CAD</option>
+<option>AUD/USD</option>
+</select>
+</div>
+<div>
+<label>Timeframe</label>
+<select id="interval">
+<option value="5min">5 min</option>
+<option value="15min">15 min</option>
+<option value="1h">1 hour</option>
+<option value="4h">4 hours</option>
+<option value="1day">1 day</option>
+</select>
+</div>
+</div>
+
+<button onclick="analyze()">Fetch candles & analyze</button>
+<div id="status" class="muted">Ready</div>
+</div>
+
+<div class="card">
+<h3>Signal overview</h3>
+<div class="grid">
+<div class="metric">Latest close<b id="price">—</b></div>
+<div class="metric">EMA 20<b id="ema">—</b></div>
+<div class="metric">RSI 14<b id="rsi">—</b></div>
+<div class="metric">Bias<b id="bias">WAIT</b></div>
+</div>
+<p id="signal" class="signal">WAIT</p>
+<p id="reason" class="muted">Load candles to calculate indicators.</p>
+<p class="warn">Prototype only. Rule-based bias, not AI, financial advice, or a guaranteed signal.</p>
+</div>
+
+<div class="card">
+<h3>Recent candles</h3>
+<pre id="candles">No data loaded.</pre>
+</div>
+
+<div class="card">
+<h3>Basic risk budget calculator</h3>
+<label>Account balance</label>
+<input id="balance" type="number" value="1000" min="0">
+<label>Risk per trade (%)</label>
+<input id="risk" type="number" value="1" min="0" max="100" step="0.1">
+<div class="metric">Risk budget<b id="riskcash">10.00</b></div>
+<p class="warn">This estimates money at risk only. It does not calculate lot size or pip value.</p>
+</div>
+
+<script>
+function ema(values,period){
+const k=2/(period+1);
+let e=values[0];
+for(let i=1;i<values.length;i++)e=values[i]*k+e*(1-k);
+return e;
+}
+
+function rsi(values,p=14){
+if(values.length<=p)return null;
+let g=0,l=0;
+for(let i=values.length-p;i<values.length;i++){
+let d=values[i]-values[i-1];
+if(d>0)g+=d;else l-=d;
+}
+let ag=g/p,al=l/p;
+if(al===0)return 100;
+return 100-100/(1+ag/al);
+}
+
+async function analyze(){
+let key=document.getElementById('key').value.trim();
+if(!key){
+document.getElementById('status').textContent='Enter API key.';
+return;
+}
+
+let pair=document.getElementById('pair').value;
+let interval=document.getElementById('interval').value;
+document.getElementById('status').textContent='Loading…';
+
+try{
+let u='https://api.twelvedata.com/time_series?symbol='+
+encodeURIComponent(pair)+'&interval='+interval+
+'&outputsize=30&apikey='+encodeURIComponent(key);
+
+let res=await fetch(u),d=await res.json();
+
+if(d.status==='error'||d.code||!d.values){
+document.getElementById('status').textContent='API error: '+(d.message||'No candle data');
+return;
+}
+
+let cs=d.values.slice().reverse();
+let v=cs.map(c=>Number(c.close));
+
+if(v.length<15){
+document.getElementById('status').textContent='Not enough candles for RSI(14).';
+return;
+}
+
+let last=v[v.length-1];
+let e=ema(v.slice(-20),20);
+let rv=rsi(v,14);
+let s='WAIT';
+let why='Conditions are mixed; wait for clearer confirmation.';
+
+if(last>e&&rv>=50&&rv<70){
+s='BUY BIAS';
+why='Close above EMA20 and RSI between 50 and 70.';
+}
+else if(last<e&&rv>30&&rv<=50){
+s='SELL BIAS';
+why='Close below EMA20 and RSI between 30 and 50.';
+}
+
+document.getElementById('price').textContent=last;
+document.getElementById('ema').textContent=e.toFixed(5);
+document.getElementById('rsi').textContent=rv.toFixed(2);
+document.getElementById('bias').textContent=s;
+document.getElementById('signal').textContent=s;
+document.getElementById('reason').textContent=why;
+
+document.getElementById('candles').textContent=
+cs.slice(-5).reverse().map(c=>
+`${c.datetime}\nO ${c.open} | H ${c.high} | L ${c.low} | C ${c.close}`
+).join('\n---\n');
+
+document.getElementById('status').textContent=
+'Fetched '+cs.length+' candles. Latest timestamp: '+cs[cs.length-1].datetime;
+
+}catch(e){
+document.getElementById('status').textContent='Network/CORS error: '+e.message;
+}
+}
+
+function risk(){
+let b=Number(document.getElementById('balance').value)||0;
+let p=Number(document.getElementById('risk').value)||0;
+document.getElementById('riskcash').textContent=(b*p/100).toFixed(2);
+}
+
+document.getElementById('balance').addEventListener('input',risk);
+document.getElementById('risk').addEventListener('input',risk);
+risk();
+</script>
+</body>
+  </html>
