@@ -171,6 +171,11 @@ document.getElementById('ema').textContent=e.toFixed(5);
 document.getElementById('rsi').textContent=rv.toFixed(2);
 document.getElementById('bias').textContent=s;
 document.getElementById('signal').textContent=s;
+  let signalColor = s === 'BUY BIAS' ? '#22c55e' :
+                  s === 'SELL BIAS' ? '#ef4444' : '#facc15';
+
+document.getElementById('signal').style.color = signalColor;
+document.getElementById('bias').style.color = signalColor;
 document.getElementById('reason').textContent=why;
 
 document.getElementById('candles').textContent=
