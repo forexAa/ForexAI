@@ -180,16 +180,6 @@ else if(last<e && rv>50){
 else{
   why='WAIT: Price is at EMA20. Wait for a clearer trend.';
 }
-  
-
-if(last>e&&rv>=50&&rv<70){
-s='BUY BIAS';
-why='Close above EMA20 and RSI between 50 and 70.';
-}
-else if(last<e&&rv>30&&rv<=50){
-s='SELL BIAS';
-why='Close below EMA20 and RSI between 30 and 50.';
-}
 
 document.getElementById('price').textContent=last;
 document.getElementById('ema').textContent=e.toFixed(5);
