@@ -139,7 +139,34 @@ let ag=g/p,al=l/p;
 if(al===0)return 100;
 return 100-100/(1+ag/al);
 }
+function saveHistory(scanText){
+  let history=JSON.parse(localStorage.getItem('forexHistory')||'[]');
 
+  history.unshift({
+    time:new Date().toLocaleString(),
+    result:scanText
+  });
+
+  history=history.slice(0,10);
+
+  localStorage.setItem('forexHistory',JSON.stringify(history));
+
+  showHistory();
+}
+
+function showHistory(){
+  let history=JSON.parse(localStorage.getItem('forexHistory')||'[]');
+
+  document.getElementById('history').textContent=
+    history.length
+      ? history.map(item=>item.time+'\n'+item.result).join('\n\n')
+      : 'No previous signals yet.';
+}
+
+function clearHistory(){
+  localStorage.removeItem('forexHistory');
+  showHistory();
+}
 async function analyze(){
 let key=document.getElementById('key').value.trim();
 if(!key){
