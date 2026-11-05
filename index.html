@@ -366,7 +366,7 @@ document.getElementById('status').textContent='Network/CORS error: '+e.message;
 
   output.textContent=results.join('\n');
   }
-
+saveHistory(output.textContent);
 function risk(){
 let b=Number(document.getElementById('balance').value)||0;
 let p=Number(document.getElementById('risk').value)||0;
