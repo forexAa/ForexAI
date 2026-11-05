@@ -155,7 +155,32 @@ let last=v[v.length-1];
 let e=ema(v.slice(-20),20);
 let rv=rsi(v,14);
 let s='WAIT';
-let why='Conditions are mixed; wait for clearer confirmation.';
+let why='';
+
+if(last>e && rv>=50 && rv<70){
+  s='BUY BIAS';
+  why='BUY: Price is above EMA20 and RSI confirms bullish momentum.';
+}
+else if(last<e && rv>30 && rv<=50){
+  s='SELL BIAS';
+  why='SELL: Price is below EMA20 and RSI confirms bearish momentum.';
+}
+else if(last>e && rv<50){
+  why='WAIT: Price is above EMA20, but RSI is below 50. BUY confirmation is missing.';
+}
+else if(last>e && rv>=70){
+  why='WAIT: RSI is 70 or higher. Avoid chasing an overextended move.';
+}
+else if(last<e && rv<=30){
+  why='WAIT: RSI is 30 or lower. Wait for clearer confirmation.';
+}
+else if(last<e && rv>50){
+  why='WAIT: Price is below EMA20, but RSI is above 50.';
+}
+else{
+  why='WAIT: Price is at EMA20. Wait for a clearer trend.';
+}
+  
 
 if(last>e&&rv>=50&&rv<70){
 s='BUY BIAS';
