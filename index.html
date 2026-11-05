@@ -231,6 +231,21 @@ document.getElementById('trend').textContent=trend;
 document.getElementById('trend').style.color=
   trend==='Bullish'?'#22c55e':
   trend==='Bearish'?'#ef4444':'#facc15';
+  let recentCandles=cs.slice(-10);
+
+let supportPrice=Math.min(
+  ...recentCandles.map(c=>Number(c.low))
+);
+
+let resistancePrice=Math.max(
+  ...recentCandles.map(c=>Number(c.high))
+);
+
+document.getElementById('support').textContent=
+  supportPrice.toFixed(5);
+
+document.getElementById('resistance').textContent=
+  resistancePrice.toFixed(5);
 document.getElementById('price').textContent=last;
 document.getElementById('ema').textContent=e.toFixed(5);
 document.getElementById('rsi').textContent=rv.toFixed(2);
