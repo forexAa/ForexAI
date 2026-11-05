@@ -211,6 +211,20 @@ document.getElementById('stop').textContent=
 
 document.getElementById('target').textContent=
   Number.isFinite(target)?target.toFixed(5):'—';
+  let trend='Sideways';
+
+if(last>e && cs[cs.length-1].close>cs[cs.length-5].close){
+  trend='Bullish';
+}
+else if(last<e && cs[cs.length-1].close<cs[cs.length-5].close){
+  trend='Bearish';
+}
+
+document.getElementById('trend').textContent=trend;
+
+document.getElementById('trend').style.color=
+  trend==='Bullish'?'#22c55e':
+  trend==='Bearish'?'#ef4444':'#facc15';
 document.getElementById('price').textContent=last;
 document.getElementById('ema').textContent=e.toFixed(5);
 document.getElementById('rsi').textContent=rv.toFixed(2);
