@@ -1,0 +1,19 @@
+
+{
+  "name": "ForexAI",
+  "short_name": "ForexAI",
+  "description": "Forex market analysis and risk calculator",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2794/2794702.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
