@@ -270,6 +270,67 @@ document.getElementById('status').textContent=
 document.getElementById('status').textContent='Network/CORS error: '+e.message;
 }
 }
+  async function scanPairs(){
+  const key=document.getElementById('key').value.trim();
+  const interval=document.getElementById('interval').value;
+  const output=document.getElementById('scanner');
+
+  if(!key){
+    output.textContent='Enter your Twelve Data API key first.';
+    return;
+  }
+
+  output.textContent='Scanning markets...';
+
+  const pairs=['EUR/USD','GBP/USD','USD/JPY','USD/CAD'];
+  let results=[];
+
+  for(const pair of pairs){
+    try{
+      const url='https://api.twelvedata.com/time_series?symbol='+
+        encodeURIComponent(pair)+'&interval='+interval+
+        '&outputsize=30&apikey='+encodeURIComponent(key);
+
+      const response=await fetch(url);
+      const data=await response.json();
+
+      if(!data.values || data.status==='error'){
+        results.push(pair+': Data unavailable');
+        continue;
+      }
+
+      const candles=data.values.slice().reverse();
+      const closes=candles.map(c=>Number(c.close));
+
+      if(closes.length<15){
+        results.push(pair+': Not enough data');
+        continue;
+      }
+
+      const last=closes[closes.length-1];
+      const average=ema(closes.slice(-20),20);
+      const strength=rsi(closes,14);
+
+      let signal='WAIT';
+
+      if(last>average && strength>=50 && strength<70){
+        signal='BUY BIAS';
+      }else if(last<average && strength>30 && strength<=50){
+        signal='SELL BIAS';
+      }
+
+      results.push(
+        pair+' | '+signal+
+        ' | RSI: '+strength.toFixed(2)
+      );
+
+    }catch(error){
+      results.push(pair+': Connection error');
+    }
+  }
+
+  output.textContent=results.join('\n');
+  }
 
 function risk(){
 let b=Number(document.getElementById('balance').value)||0;
