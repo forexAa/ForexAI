@@ -185,7 +185,31 @@ else if(last<e && rv>50){
 else{
   why='WAIT: Price is at EMA20. Wait for a clearer trend.';
 }
+let entry=last;
+let stop=NaN;
+let target=NaN;
 
+let recent=cs.slice(-5);
+let swingLow=Math.min(...recent.map(c=>Number(c.low)));
+let swingHigh=Math.max(...recent.map(c=>Number(c.high)));
+
+if(s==='BUY BIAS' && swingLow<entry){
+  stop=swingLow;
+  target=entry+(entry-stop)*2;
+}
+else if(s==='SELL BIAS' && swingHigh>entry){
+  stop=swingHigh;
+  target=entry-(stop-entry)*2;
+}
+
+document.getElementById('entry').textContent=
+  s==='WAIT'?'—':entry.toFixed(5);
+
+document.getElementById('stop').textContent=
+  Number.isFinite(stop)?stop.toFixed(5):'—';
+
+document.getElementById('target').textContent=
+  Number.isFinite(target)?target.toFixed(5):'—';
 document.getElementById('price').textContent=last;
 document.getElementById('ema').textContent=e.toFixed(5);
 document.getElementById('rsi').textContent=rv.toFixed(2);
