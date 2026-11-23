@@ -327,6 +327,39 @@ chartData.forEach((c, i) => {
 });
 
 emaSeries.setData(emaData);
+  const rsiData = [];
+
+for (let i = 14; i < chartData.length; i++) {
+  let gains = 0;
+  let losses = 0;
+
+  for (let j = i - 13; j <= i; j++) {
+    const change = chartData[j].close - chartData[j - 1].close;
+
+    if (change > 0) gains += change;
+    else losses += Math.abs(change);
+  }
+
+  const avgGain = gains / 14;
+  const avgLoss = losses / 14;
+
+  let rsi = 50;
+
+  if (avgLoss === 0 && avgGain > 0) rsi = 100;
+  else if (avgGain === 0 && avgLoss > 0) rsi = 0;
+  else if (avgGain > 0 && avgLoss > 0) {
+    const rs = avgGain / avgLoss;
+    rsi = 100 - (100 / (1 + rs));
+  }
+
+  rsiData.push({
+    time: chartData[i].time,
+    value: rsi
+  });
+}
+
+rsiSeries.setData(rsiData);
+rsiChart.timeScale().fitContent();
   forexChart.timeScale().fitContent();
 }
   
