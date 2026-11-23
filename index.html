@@ -278,6 +278,24 @@ function displayCandles(candles) {
   }));
 
   candleSeries.setData(chartData);
+  const emaData = [];
+const multiplier = 2 / 21;
+let ema = chartData[0].close;
+
+chartData.forEach((c, i) => {
+  ema = i === 0
+    ? c.close
+    : (c.close - ema) * multiplier + ema;
+
+  if (i >= 19) {
+    emaData.push({
+      time: c.time,
+      value: ema
+    });
+  }
+});
+
+emaSeries.setData(emaData);
   forexChart.timeScale().fitContent();
 }
   
