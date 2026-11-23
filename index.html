@@ -266,6 +266,35 @@ let candleSeries = forexChart.addCandlestickSeries({
   color: '#38bdf8',
   lineWidth: 2,
   title: 'EMA 20'
+});let rsiChart = LightweightCharts.createChart(
+  document.getElementById('rsiChart'),
+  {
+    width: document.getElementById('rsiChart').clientWidth,
+    height: 180,
+    layout: {
+      background: { color: '#0b1220' },
+      textColor: '#e5e7eb'
+    },
+    grid: {
+      vertLines: { color: '#263247' },
+      horzLines: { color: '#263247' }
+    },
+    rightPriceScale: {
+      scaleMargins: {
+        top: 0.1,
+        bottom: 0.1
+      }
+    },
+    timeScale: {
+      visible: true
+    }
+  }
+);
+
+let rsiSeries = rsiChart.addLineSeries({
+  color: '#f59e0b',
+  lineWidth: 2,
+  title: 'RSI 14'
 });
 
 function displayCandles(candles) {
