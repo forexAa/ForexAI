@@ -416,6 +416,13 @@ document.getElementById('status').textContent=
 document.getElementById('status').textContent='Network/CORS error: '+e.message;
 }
 }
+  let autoRefreshTimer = setInterval(() => {
+  let key = document.getElementById('key').value.trim();
+
+  if (key) {
+    analyze();
+  }
+}, 5 * 60 * 1000);
   async function scanPairs(){
   const key=document.getElementById('key').value.trim();
   const interval=document.getElementById('interval').value;
