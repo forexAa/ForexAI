@@ -301,6 +301,7 @@ return;
 }
 
 let cs=d.values.slice().reverse();
+  displayCandles(cs);
 let v=cs.map(c=>Number(c.close));
 
 if(v.length<15){
