@@ -511,9 +511,7 @@ output.textContent='Scanning markets...';
 
   for(const pair of pairs){
     try{
-      const url='https://api.twelvedata.com/time_series?symbol='+
-        encodeURIComponent(pair)+'&interval='+interval+
-        '&outputsize=30&apikey='+encodeURIComponent(key);
+      const url='https://forexai-api.emmanuelfavourchibuikem.workers.dev/?symbol='+encodeURIComponent(pair)+'&interval='+encodeURIComponent(interval);
 
       const response=await fetch(url);
       const data=await response.json();
