@@ -498,23 +498,13 @@ document.getElementById('status').textContent='Network/CORS error: '+e.message;
 }
 }
   let autoRefreshTimer = setInterval(() => {
-  let key = document.getElementById('key').value.trim();
-
-  if (key) {
-    analyze();
-  }
+  analyze();
 }, 5 * 60 * 1000);
   async function scanPairs(){
-  const key=document.getElementById('key').value.trim();
   const interval=document.getElementById('interval').value;
-  const output=document.getElementById('scanner');
+const output=document.getElementById('scanner');
 
-  if(!key){
-    output.textContent='Enter your Twelve Data API key first.';
-    return;
-  }
-
-  output.textContent='Scanning markets...';
+output.textContent='Scanning markets...';
 
   const pairs=['EUR/USD','GBP/USD','USD/JPY','USD/CAD'];
   let results=[];
