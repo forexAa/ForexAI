@@ -364,10 +364,6 @@ rsiChart.timeScale().fitContent();
 }
   
 async function analyze(){
-let key=document.getElementById('key').value.trim();
-if(!key){
-document.getElementById('status').textContent='Enter API key.';
-return;
 }
 
 let pair=document.getElementById('pair').value;
@@ -375,9 +371,8 @@ let interval=document.getElementById('interval').value;
 document.getElementById('status').textContent='Loading…';
 
 try{
-let u='https://api.twelvedata.com/time_series?symbol='+
-encodeURIComponent(pair)+'&interval='+interval+
-'&outputsize=30&apikey='+encodeURIComponent(key);
+let u='https://forexai-api.emmanuelfavourchibuikem.workers.dev/?symbol='+
+encodeURIComponent(pair)+'&interval='+encodeURIComponent(interval);
 
 let res=await fetch(u),d=await res.json();
 
